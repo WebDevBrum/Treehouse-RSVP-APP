@@ -49,43 +49,33 @@ document.addEventListener('DOMContentLoaded', () => {
         // refactored from eg
         // const label = document.createElement('label');
         // label.textContent = 'confirmed';
-    
-    
-    
-            function createElement(elementName, property, value) {
-                const element = document.createElement(elementName);
-                element[property] = value; //note square brackets instead of dot , which takes a string
-                return element;
+        function createElement(elementName, property, value) {
+            const element = document.createElement(elementName);
+            element[property] = value; //note square brackets instead of dot , which takes a string
+            return element;
+        }
+
+        //refactored from eg
+        //const editButton = createElement('button', 'textContent', 'edit');
+        //li.appendChild(editButton);
+        //after creating above function
+        //good method was to coph in repeating part into a function and break down
+
+        function appendToLi(elementName, property, value) {
+            const element = createElement(elementName, property, value);
+            li.appendChild(element);
+            return element;
         }
     
-    
-    const li = document.createElement('li');
-    
-    const span = createElement('span', 'textContent', text);
-    
-    
-    li.appendChild(span);
-    
-    const label = document.createElement('label');
-    label.textContent = 'confirmed';
-    
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    
-    label.appendChild(checkbox);
-    li.appendChild(label);
-
-    const editButton = document.createElement('button');
-    editButton.textContent = 'edit';
-    
-    li.appendChild(editButton);
-
-    const removeButton = document.createElement('button');
-    removeButton.textContent = 'remove';
-   
-    li.appendChild(removeButton);
-
-    return li;
+        const li = document.createElement('li');
+        appendToLi('span', 'textContent', text);
+        //instead of label.appendChild(checkbox);
+        // so creates label element and appends to li followed by appending a checkbox element within the li to the label
+        appendToLi('label', 'textContent', 'confirmed')
+            .appendChild(createElement('input', 'type', 'checkbox')); //note use over two lines
+        appendToLi('button', 'textContent', 'edit');
+        appendToLi('button', 'textContent', 'remove');
+        return li;
     }
 
 
@@ -114,24 +104,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = e.target; 
         const li = button.parentNode; 
         const ul = li.parentNode;
-        if (button.textContent === 'remove') {
-            ul.removeChild(li);
-        } else if (button.textContent === 'edit') {
-            const span = li.firstElementChild;
-            const inputName = document.createElement('input');
-            inputName.type = 'text';
-            inputName.value = span.textContent;
-            li.insertBefore(inputName, span);
-            li.removeChild(span);
-            button.textContent = 'save';
-        } else if (button.textContent === 'save') {
-            const inputName = li.firstElementChild;   //this was bit you forgot to reverse so didnt reference first child
-            const span = document.createElement('span'); //also didnt reverse this bit
-            span.textContent = inputName.value;
-            li.insertBefore(span, inputName);
-            li.removeChild(inputName);
-            button.textContent = 'edit';
-        }
+        const action = button.textContent;
+        const nameActions = {
+            remove: () => {
+                ul.removeChild(li);
+            },
+            edit: () => {
+                const span = li.firstElementChild;
+                const inputName = document.createElement('input');
+                inputName.type = 'text';
+                inputName.value = span.textContent;
+                li.insertBefore(inputName, span);
+                li.removeChild(span);
+                button.textContent = 'save';
+             },
+             save: () => {
+                const inputName = li.firstElementChild;   //this was bit you forgot to reverse so didnt reference first child
+                const span = document.createElement('span'); //also didnt reverse this bit
+                span.textContent = inputName.value;
+                li.insertBefore(span, inputName);
+                li.removeChild(inputName);
+                button.textContent = 'edit';
+             }
+
+        };
+        
+        // select and run action in buttons name
+         nameActions[action]();
+
+        //replaces below 
+        // if (action === 'remove') {
+        //     nameActions.remove();
+        // } else if (action === 'edit') {
+        //     nameActions.edit();
+        // } else if (action === 'save') {
+        //     nameActions.save();
+        // }
     } 
     });
 
